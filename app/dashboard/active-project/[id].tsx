@@ -32,12 +32,14 @@ import {
   BottomSheetModal,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
+import DocumentPickerInput from "@/components/DocumentPicker";
+import UserProfile from "@/components/user/UserProfile";
 
 const Page = () => {
   const [bigImage, setBigImage] = useState<string | null>();
 
   const bottomSheetRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => [300, "85%"], []);
+  const snapPoints = useMemo(() => [500, 550], []);
   const [isOpen, setIsOpen] = useState(false);
 
   const renderBackDrop = useCallback(
@@ -113,26 +115,10 @@ const Page = () => {
           flex: 1,
         }}
       >
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 8,
-            paddingBottom: 8,
-          }}
-        >
-          <Image
-            source={{ uri: "https://i.pravatar.cc/300" }}
-            height={50}
-            width={50}
-            style={{ borderRadius: 100 }}
-          />
-          <Text
-            style={{ fontFamily: "red-hat", fontSize: 25, fontWeight: 700 }}
-          >
-            Francisco Fisher
-          </Text>
-        </View>
+        <UserProfile
+          userImageUrl="https://i.pravatar.cc/300"
+          userName="Francisco Fisher"
+        />
 
         <View>
           <Text
@@ -185,7 +171,14 @@ const Page = () => {
           <ImageShowCase setImageCallback={setBigImage} />
         </View>
 
-        <View style={{ alignSelf: "center", flex: 1, marginTop: 24 }}>
+        <View
+          style={{
+            alignSelf: "center",
+            flex: 1,
+            marginTop: 24,
+            justifyContent: "flex-end",
+          }}
+        >
           <PrimaryBtn
             style={[globalStyles.primaryBtn, { marginTop: "auto" }]}
             onPress={() => {
@@ -247,7 +240,7 @@ const Page = () => {
         snapPoints={snapPoints}
         enableDynamicSizing
         backdropComponent={renderBackDrop}
-        maxDynamicContentSize={480}
+        maxDynamicContentSize={500}
         enablePanDownToClose
         onChange={(i) => {
           setIsOpen(i === 1);
@@ -278,14 +271,26 @@ const Page = () => {
             placeholder="Message"
           />
 
-          <PrimaryBtn
-            style={[
-              globalStyles.primaryBtn,
-              { maxWidth: 300, marginHorizontal: "auto", width: "100%" },
-            ]}
+          <DocumentPickerInput />
+
+          <View
+            style={{
+              marginTop: 70,
+            }}
           >
-            <Text style={[globalStyles.PrimaryBtnTitle]}>Send</Text>
-          </PrimaryBtn>
+            <PrimaryBtn
+              style={[
+                globalStyles.primaryBtn,
+                {
+                  maxWidth: 300,
+                  marginHorizontal: "auto",
+                  width: "100%",
+                },
+              ]}
+            >
+              <Text style={[globalStyles.PrimaryBtnTitle]}>Send</Text>
+            </PrimaryBtn>
+          </View>
         </BottomSheetView>
       </BottomSheetModal>
     </ScrollView>

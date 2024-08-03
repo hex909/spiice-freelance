@@ -5,6 +5,7 @@ import { useUser } from "@clerk/clerk-expo";
 import { Feather } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import Toast from "react-native-toast-message";
+import { supabase } from "@/util/supabase";
 
 export default function ImageUpdate() {
   const { user } = useUser();
@@ -38,7 +39,12 @@ export default function ImageUpdate() {
       user
         ?.setProfileImage({ file: `data:image/png;base64,${image?.base64}` })
         .then(() => {
-          user.reload().then(() => {
+          user.reload().then(async () => {
+            await supabase
+              .from("users")
+              .update([{ imageUrl: user.imageUrl }])
+              .eq("userId", user.id)
+              .select();
             setImage(() => initialValue());
           });
           Toast.show({

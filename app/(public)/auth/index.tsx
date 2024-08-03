@@ -6,7 +6,6 @@ import {
   ImageBackground,
   Keyboard,
   ActivityIndicator,
-  Pressable,
 } from "react-native";
 import { globalStyles } from "@/styles/globel";
 import { Colors } from "@/constants/Colors";
@@ -23,6 +22,7 @@ import PrimaryBtn from "@/components/PrimaryBtn";
 import * as Haptics from "expo-haptics";
 import Toast from "react-native-toast-message";
 import { Feather } from "@expo/vector-icons";
+import PasswordEye from "@/components/PasswordEye";
 
 interface FormValue {
   identifier: string;
@@ -167,22 +167,10 @@ const Page = () => {
                         value={value}
                         ref={passwordRef}
                       />
-                      <Pressable
-                        style={{
-                          position: "absolute",
-                          right: 10,
-                          bottom: 52 / 2 - 12,
-                        }}
-                        onPress={() => {
-                          setShowPwd((e) => !e);
-                        }}
-                      >
-                        {!showPwd ? (
-                          <Feather name="eye" size={24} color="#2c2c2c" />
-                        ) : (
-                          <Feather name="eye-off" size={24} color="#2c2c2c" />
-                        )}
-                      </Pressable>
+                      <PasswordEye
+                        showPwd={showPwd}
+                        onPress={() => setShowPwd((e) => !e)}
+                      />
                     </View>
                   )}
                   name="password"

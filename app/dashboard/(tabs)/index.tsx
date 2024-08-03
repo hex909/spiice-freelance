@@ -1,5 +1,5 @@
 import { Text, ScrollView, View, Pressable } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { Colors } from "@/constants/Colors";
 import { CartesianChart, Bar } from "victory-native";
 import ActiveCard from "@/components/dashboard/home/ActiveProjectStats";
@@ -26,16 +26,35 @@ const Index = () => {
     >
       <View style={{ paddingHorizontal: 16, paddingBottom: 8 }}>
         <Text style={[globalStyles.pageMainTitle]}>Feed</Text>
-        <Text
+        <View
           style={{
-            color: Colors.text,
-            fontSize: 25,
-            fontWeight: 700,
-            fontFamily: "red-hat",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
-          Resume
-        </Text>
+          <Text
+            style={{
+              color: Colors.text,
+              fontSize: 25,
+              fontWeight: 700,
+              fontFamily: "red-hat",
+            }}
+          >
+            Resume
+          </Text>
+          <Link
+            href={"dashboard/details"}
+            style={{
+              paddingHorizontal: 12,
+              paddingVertical: 4,
+              backgroundColor: "#D8CEFF",
+              borderRadius: 4,
+            }}
+          >
+            <Text style={{ fontSize: 13 }}>View all</Text>
+          </Link>
+        </View>
       </View>
 
       <View
@@ -111,6 +130,15 @@ const Index = () => {
         </View>
       </View>
 
+      <View style={{ paddingHorizontal: 16, paddingTop: 20 }}>
+        <Link href={"dashboard/proposal/create/"}>
+          <Text style={{ textDecorationLine: "underline" }}>
+            Create a proposal
+          </Text>
+        </Link>
+      </View>
+
+      {/* Active Projects */}
       <View style={{ paddingBottom: 20 }}>
         <View style={{ paddingHorizontal: 16, paddingTop: 26 }}>
           <View

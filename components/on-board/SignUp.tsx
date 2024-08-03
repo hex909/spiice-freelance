@@ -3,7 +3,6 @@ import {
   Text,
   useWindowDimensions,
   TextInput,
-  Pressable,
   Keyboard,
   ActivityIndicator,
 } from "react-native";
@@ -12,7 +11,7 @@ import { Colors } from "@/constants/Colors";
 import { useRouter } from "expo-router";
 import { useForm, Controller } from "react-hook-form";
 import { useSignUp } from "@clerk/clerk-expo";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useOnBoardSlice } from "@/store/boardSlice";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
@@ -21,6 +20,8 @@ import PrimaryBtn from "../PrimaryBtn";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Toast from "react-native-toast-message";
+import PasswordEye from "../PasswordEye";
+import { supabase } from "@/util/supabase";
 
 interface FormValue {
   firstName: string;
@@ -40,6 +41,9 @@ const SignUp = () => {
     emailAddress: z.string().email("Invalid email address"),
     password: z.string().min(8, "Minimum 8 characters"),
   });
+  const lastNameRef = useRef<TextInput>(null);
+  const emailAddressRef = useRef<TextInput>(null);
+  const passwordRef = useRef<TextInput>(null);
 
   const {
     control,
@@ -48,9 +52,10 @@ const SignUp = () => {
   } = useForm<FormValue>({
     resolver: zodResolver(schema),
   });
+  const [showPwd, setShowPwd] = useState(false);
 
   const { isLoaded, signUp, setActive } = useSignUp();
-  const [pendingVerification, setPendingVerification] = useState(true);
+  const [pendingVerification, setPendingVerification] = useState(false);
 
   const [code, setCode] = useState("");
   const [isOnBoard, setOnBoardingCompletion] = useOnBoardSlice((state) => [
@@ -85,17 +90,17 @@ const SignUp = () => {
         type: "success",
         text1: "Verification on the Way!",
         text2: `We've sent a verification code to ${emailAddress}. Look for it soon!`,
-        position: "bottom",
+        position: "top",
       });
     } catch (err: any) {
-      setIsLoading(false);
       Toast.show({
         type: "success",
         text1: "Verification Code Not Sent",
         text2: `There was a problem sending the verification code. Please try again`,
-        position: "bottom",
+        position: "top",
       });
     }
+    setIsLoading(false);
   };
 
   const onError = () => {
@@ -113,11 +118,17 @@ const SignUp = () => {
         code,
       });
 
-      setActive({ session: completeSignUp.createdSessionId }).then(() => {
+      setActive({ session: completeSignUp.createdSessionId }).then(async () => {
+        await supabase.from("users").insert([
+          {
+            userId: completeSignUp.createdUserId,
+            fullName: `${completeSignUp.firstName} + ${completeSignUp.lastName}`,
+          },
+        ]);
         setOnBoardingCompletion();
       });
 
-      router.replace("(tabs)/");
+      router.replace("/dashboard");
     } catch (err: any) {
       console.error(JSON.stringify(err, null, 2));
       setIsLoading(false);
@@ -191,6 +202,10 @@ const SignUp = () => {
                       value={value}
                       placeholderTextColor={"#848484"}
                       style={[globalStyles.TextInput]}
+                      enterKeyHint="next"
+                      onSubmitEditing={() => {
+                        lastNameRef.current?.focus();
+                      }}
                     />
                   )}
                   name="firstName"
@@ -199,12 +214,17 @@ const SignUp = () => {
                   control={control}
                   render={({ field: { onBlur, onChange, value } }) => (
                     <TextInput
+                      ref={lastNameRef}
                       placeholder="Last Name"
                       onBlur={onBlur}
                       onChangeText={onChange}
                       value={value}
                       placeholderTextColor={"#848484"}
                       style={[globalStyles.TextInput]}
+                      enterKeyHint="next"
+                      onSubmitEditing={() => {
+                        emailAddressRef.current?.focus();
+                      }}
                     />
                   )}
                   name="lastName"
@@ -213,6 +233,7 @@ const SignUp = () => {
                   control={control}
                   render={({ field: { onBlur, onChange, value } }) => (
                     <TextInput
+                      ref={emailAddressRef}
                       placeholder="Email"
                       onBlur={onBlur}
                       keyboardType="email-address"
@@ -220,6 +241,11 @@ const SignUp = () => {
                       value={value}
                       placeholderTextColor={"#848484"}
                       style={[globalStyles.TextInput]}
+                      autoCapitalize="none"
+                      enterKeyHint="next"
+                      onSubmitEditing={() => {
+                        passwordRef.current?.focus();
+                      }}
                     />
                   )}
                   name="emailAddress"
@@ -229,12 +255,17 @@ const SignUp = () => {
                   render={({ field: { onBlur, onChange, value } }) => (
                     <View style={{ width: "100%", position: "relative" }}>
                       <TextInput
+                        ref={passwordRef}
                         placeholder="Password"
-                        secureTextEntry={true}
+                        secureTextEntry={!showPwd}
                         style={[globalStyles.TextInput]}
                         onBlur={onBlur}
                         onChangeText={onChange}
                         value={value}
+                      />
+                      <PasswordEye
+                        showPwd={showPwd}
+                        onPress={() => setShowPwd((e) => !e)}
                       />
                     </View>
                   )}

@@ -8,6 +8,7 @@ import { Colors } from "@/constants/Colors";
 import Toast from "react-native-toast-message";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const tokenCache = {
   async getToken(key: string) {
@@ -54,6 +55,8 @@ const RootLayout = () => {
   );
 };
 
+const queryClient = new QueryClient();
+
 const App = () => {
   return (
     <ClerkProvider
@@ -61,9 +64,11 @@ const App = () => {
       tokenCache={tokenCache}
     >
       <GestureHandlerRootView>
-        <BottomSheetModalProvider>
-          <RootLayout />
-        </BottomSheetModalProvider>
+        <QueryClientProvider client={queryClient}>
+          <BottomSheetModalProvider>
+            <RootLayout />
+          </BottomSheetModalProvider>
+        </QueryClientProvider>
         <Toast />
       </GestureHandlerRootView>
     </ClerkProvider>

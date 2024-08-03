@@ -29,6 +29,7 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      "expo-document-picker",
       "expo-router",
       ["expo-font", {"fonts": "./assets/fonts/red-hat.ttf"}]
     ],
